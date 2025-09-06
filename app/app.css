@@ -36,3 +36,7 @@ button {
 .white-button {
   @apply bg-white hover:bg-white/90 text-sm text-black rounded-md px-4 py-2 font-medium select-none transition-all;
 }
+
+.dark-button {
+  @apply bg-neutral-800 hover:bg-neutral-800/90 text-sm text-white rounded-md px-4 py-2 font-medium select-none transition-all;
+}

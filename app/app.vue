@@ -3,4 +3,5 @@
   <AppHeader />
   <NuxtPage />
   <AppFooter />
+  <ToastNotification />
 </template>

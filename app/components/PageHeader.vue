@@ -16,9 +16,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div
-    class="bg-gradient-to-b from-[#CEDFFF] to-white flex items-center justify-center h-[200px] shadow-sm mb-5"
-  >
+  <div class="bg-blue-50 to-white flex items-center justify-center py-12 mb-5">
     <div class="x-container text-center">
       <div class="flex items-center justify-center gap-x-3 mb-4">
         <Icon :name="icon" class="text-3xl" />

@@ -182,6 +182,11 @@ const handleDelete = async () => {
           :src="currentPictureUrl"
           :alt="account.name"
           class="w-full h-full object-cover"
+          style="
+            image-rendering: high-quality;
+            image-rendering: -webkit-optimize-contrast;
+          "
+          loading="eager"
         />
       </div>
 
