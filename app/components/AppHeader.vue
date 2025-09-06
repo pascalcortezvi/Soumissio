@@ -1,8 +1,9 @@
 <script setup>
 import Login from "./Login.vue";
 
-const emit = defineEmits(["openModal"]);
+const { user, userEmail, logout: userLogout, isAuthenticated } = useUser();
 const route = useRoute();
+const supabase = useSupabaseClient();
 
 // Modal state management
 const isModalOpen = ref(false);
@@ -13,6 +14,33 @@ const openModal = () => {
 
 const closeModal = () => {
   isModalOpen.value = false;
+};
+
+// Handle main button action (Connexion/Compte)
+const handleMainButton = async () => {
+  if (isAuthenticated.value && userEmail.value) {
+    // User is logged in - get account UUID by email and navigate
+    try {
+      const { data: accountData, error } = await supabase
+        .from("accounts")
+        .select("uuid")
+        .eq("email", userEmail.value)
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (accountData?.uuid) {
+        navigateTo(`/account/${accountData.uuid}`);
+      } else {
+        console.warn("No account record found for email:", userEmail.value);
+      }
+    } catch (error) {
+      console.error("Error fetching account:", error);
+    }
+  } else {
+    // User is not logged in - open login modal
+    openModal();
+  }
 };
 
 // Check if route is active
@@ -86,12 +114,18 @@ const isActiveRoute = (path) => {
       </div>
 
       <div class="flex items-center gap-5">
-        <div class="flex items-center justify-center cursor-pointer p-1">
-          <Icon name="heroicons:bell" class="text-2xl text-white/40" />
-        </div>
-        <button class="white-button" @click="openModal">Connexion</button>
+        <!-- Single button that changes text and action based on auth state -->
+        <button
+          class="white-button flex items-center gap-2"
+          @click="handleMainButton"
+        >
+          <Icon name="material-symbols:account-circle" class="text-lg" />
+          {{ isAuthenticated ? "Votre Compte" : "Connexion" }}
+        </button>
       </div>
     </div>
   </header>
-  <Modal :isOpen="isModalOpen" @close="closeModal" :component="Login" />
+  <Modal :isOpen="isModalOpen" @close="closeModal">
+    <Login @close="closeModal" />
+  </Modal>
 </template>

@@ -30,9 +30,9 @@ button {
 }
 
 .accent-button {
-  @apply bg-gradient-to-br from-[#0652db] to-[#242424] hover:from-[#0652db]/90 hover:to-[#242424]/90 text-sm text-white rounded-md px-5 py-2 font-medium select-none transition-all;
+  @apply bg-gradient-to-br from-[#0652db] to-[#242424] hover:from-[#0652db]/90 hover:to-[#242424]/90 text-sm text-white rounded-md px-4 py-2 font-medium select-none transition-all;
 }
 
 .white-button {
-  @apply bg-white hover:bg-white/90 text-sm text-black rounded-md px-5 py-2 font-medium select-none transition-all;
+  @apply bg-white hover:bg-white/90 text-sm text-black rounded-md px-4 py-2 font-medium select-none transition-all;
 }

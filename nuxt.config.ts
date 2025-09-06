@@ -23,11 +23,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     SUPABASE_URL: process.env.SUPABASE_URL,
     SUPABASE_KEY: process.env.SUPABASE_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
   },
   supabase: {
     useSsrCookies: true,
     url: process.env.SUPABASE_URL,
     key: process.env.SUPABASE_KEY,
+    serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     redirectOptions: {
       login: "/",
       callback: "/",

@@ -1,338 +1,430 @@
 <script setup>
 const route = useRoute();
-const accountId = route.params.uuid;
+const supabase = useSupabaseClient();
+const { userEmail, isAuthenticated, logout } = useUser();
 
-// Mock data - in real app, fetch by ID
-const account = ref({
-  id: accountId,
-  name: "Marie Tremblay",
-  email: "marie.tremblay@email.com",
-  accountType: "Expert Premium",
-  joinDate: "2023-03-15",
-  avatar: "MT",
-  city: "Québec",
-  province: "Québec",
-  isVerified: true,
-  membershipStatus: "Premium",
-  totalProjects: 34,
-  totalEarnings: "127,450$",
-  responseRate: "98%",
-  completionRate: "100%",
-  bio: `Expert passionnée spécialisée en développement web et design UX/UI. Membre Premium depuis 2023 avec un excellent historique de projets réussis.
+const accountUuid = route.params.uuid;
 
-Je travaille principalement avec des PME québécoises pour créer des solutions digitales sur mesure qui répondent à leurs besoins spécifiques.`,
-  skills: ["Vue.js", "React", "UX/UI Design", "Figma", "Node.js"],
-  recentProjects: [
-    {
-      id: 1,
-      title: "Site web e-commerce",
-      client: "Boutique ABC",
-      status: "Complété",
-      amount: "4,500$",
-      date: "2024-01-20",
-    },
-    {
-      id: 2,
-      title: "Application mobile",
-      client: "StartupXYZ",
-      status: "En cours",
-      amount: "8,200$",
-      date: "2024-01-10",
-    },
-    {
-      id: 3,
-      title: "Dashboard analytique",
-      client: "TechCorp",
-      status: "Complété",
-      amount: "6,800$",
-      date: "2024-01-05",
-    },
-  ],
-  activities: [
-    {
-      id: 1,
-      type: "project_completed",
-      description: "Projet 'Site web e-commerce' terminé",
-      date: "2024-01-20",
-    },
-    {
-      id: 2,
-      type: "proposal_sent",
-      description: "Proposition envoyée pour 'App mobile finance'",
-      date: "2024-01-18",
-    },
-    {
-      id: 3,
-      type: "payment_received",
-      description: "Paiement reçu - 4,500$ CAD",
-      date: "2024-01-20",
-    },
-  ],
+// Reactive state
+const account = ref(null);
+const isLoading = ref(true);
+const error = ref(null);
+
+// Check if current user is viewing their own account
+const isOwnAccount = computed(() => {
+  return (
+    account.value && userEmail.value && account.value.email === userEmail.value
+  );
 });
 
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString("fr-CA");
-};
+// Fetch account data
+const fetchAccount = async () => {
+  if (!accountUuid) {
+    // Redirect to home if no UUID
+    await navigateTo("/");
+    return;
+  }
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "Complété":
-      return "bg-green-100 text-green-800";
-    case "En cours":
-      return "bg-blue-100 text-blue-800";
-    case "En attente":
-      return "bg-yellow-100 text-yellow-800";
-    default:
-      return "bg-neutral-100 text-neutral-800";
+  try {
+    isLoading.value = true;
+    error.value = null;
+
+    const { data, error: fetchError } = await supabase
+      .from("accounts")
+      .select("*")
+      .eq("uuid", accountUuid)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+
+    if (!data) {
+      // No account found - redirect to home
+      await navigateTo("/");
+      return;
+    }
+
+    account.value = data;
+  } catch (err) {
+    console.error("Error fetching account:", err);
+    // For any other errors, also redirect to home
+    await navigateTo("/");
+  } finally {
+    isLoading.value = false;
   }
 };
 
+// Format date helper
+const formatDate = (dateString) => {
+  if (!dateString) return "Non renseigné";
+  return new Date(dateString).toLocaleDateString("fr-CA", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
+// Get membership status text
+const getMembershipStatus = (isMember) => {
+  return isMember ? "Membre Premium" : "Membre Standard";
+};
+
+// Get account status text
+const getAccountStatus = (isBan) => {
+  return isBan ? "Compte suspendu" : "Compte actif";
+};
+
+// Get tarif display
+const getTarifDisplay = (tarif) => {
+  const tarifLabels = {
+    1: "Débutant",
+    2: "Intermédiaire",
+    3: "Expert",
+    4: "Senior",
+  };
+  return tarifLabels[tarif] || `Niveau ${tarif}`;
+};
+
+// Get user initials for avatar
+const getUserInitials = (name) => {
+  if (!name) return "??";
+  return name
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase())
+    .slice(0, 2)
+    .join("");
+};
+
+// Edit profile action
 const editProfile = () => {
   alert("Fonctionnalité d'édition en développement!");
 };
+
+// Logout action
+const handleLogout = async () => {
+  const result = await logout();
+  if (result.success) {
+    await navigateTo("/");
+  }
+};
+
+// Handle picture update
+const handlePictureUpdate = (newPictureUrl) => {
+  if (account.value) {
+    account.value.pic_url = newPictureUrl;
+  }
+};
+
+// Fetch data on mount
+onMounted(() => {
+  fetchAccount();
+});
 </script>
 
 <template>
   <div class="min-h-screen">
-    <!-- Page Header Section -->
-    <PageHeader
-      :title="account.name"
-      icon="heroicons:user"
-      :description="`${account.accountType} • ${account.city}, ${
-        account.province
-      } • Membre depuis ${formatDate(account.joinDate)} • ${
-        account.membershipStatus
-      }`"
-    />
-
-    <div class="x-container py-8">
-      <!-- Quick Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="min-h-screen flex items-center justify-center">
+      <div class="text-center">
         <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ account.totalProjects }}
-          </div>
-          <div class="text-sm text-neutral-600">Projets complétés</div>
-        </div>
-        <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ account.totalEarnings }}
-          </div>
-          <div class="text-sm text-neutral-600">Revenus totaux</div>
-        </div>
-        <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ account.responseRate }}
-          </div>
-          <div class="text-sm text-neutral-600">Taux de réponse</div>
-        </div>
-        <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ account.completionRate }}
-          </div>
-          <div class="text-sm text-neutral-600">Taux de completion</div>
-        </div>
+          class="animate-spin rounded-full h-32 w-32 border-b-2 border-accent"
+        ></div>
+        <p class="mt-4 text-neutral-600">Chargement du compte...</p>
       </div>
+    </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- About Section -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <Icon name="heroicons:user" class="w-6 h-6 text-accent" />
-              <h2 class="text-xl font-bold text-black">À propos</h2>
-            </div>
-            <div class="text-neutral-700 leading-relaxed whitespace-pre-line">
-              {{ account.bio }}
-            </div>
-          </section>
+    <!-- Error State -->
+    <div
+      v-else-if="error"
+      class="min-h-screen flex items-center justify-center"
+    >
+      <div class="text-center">
+        <Icon
+          name="heroicons:exclamation-triangle"
+          class="w-16 h-16 text-red-500 mx-auto mb-4"
+        />
+        <h2 class="text-2xl font-bold text-black mb-2">Erreur</h2>
+        <p class="text-neutral-600 mb-4">{{ error }}</p>
+        <button @click="fetchAccount" class="accent-button px-6 py-2">
+          Réessayer
+        </button>
+      </div>
+    </div>
 
-          <!-- Skills -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <Icon name="heroicons:code-bracket" class="w-6 h-6 text-accent" />
-              <h2 class="text-xl font-bold text-black">Compétences</h2>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="skill in account.skills"
-                :key="skill"
-                class="px-3 py-1 bg-main text-white text-sm rounded-full font-medium"
-              >
-                {{ skill }}
-              </span>
-            </div>
-          </section>
+    <!-- Account Data -->
+    <div v-else-if="account">
+      <!-- Page Header Section -->
+      <PageHeader
+        :title="account.name || 'Compte sans nom'"
+        icon="material-symbols:account-circle"
+        :description="`${getTarifDisplay(
+          account.tarif
+        )} • ${getMembershipStatus(
+          account.is_member
+        )} • Membre depuis ${formatDate(account.created_at)}`"
+      />
 
-          <!-- Recent Projects -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <Icon name="heroicons:briefcase" class="w-6 h-6 text-accent" />
-              <h2 class="text-xl font-bold text-black">Projets récents</h2>
-            </div>
-            <div class="space-y-4">
-              <div
-                v-for="project in account.recentProjects"
-                :key="project.id"
-                class="border border-neutral-200 rounded-lg p-4 bg-neutral-50"
-              >
-                <div class="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 class="text-lg font-bold text-black">
-                      {{ project.title }}
-                    </h3>
-                    <p class="text-sm text-neutral-600">{{ project.client }}</p>
-                  </div>
-                  <div class="text-right">
+      <div class="x-container py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Main Content -->
+          <div class="lg:col-span-2 space-y-6">
+            <!-- Profile Overview -->
+            <section class="bg-white border border-neutral-200 rounded-lg p-6">
+              <div class="flex items-start gap-6">
+                <!-- Profile Picture Manager -->
+                <div class="flex-shrink-0">
+                  <ProfilePictureManager
+                    :account="account"
+                    :is-own-account="isOwnAccount"
+                    @picture-updated="handlePictureUpdate"
+                  />
+                </div>
+
+                <!-- Profile Info -->
+                <div class="flex-1">
+                  <h1 class="text-2xl font-bold text-black mb-2">
+                    {{ account.name || "Nom non renseigné" }}
+                  </h1>
+                  <p class="text-neutral-600 mb-4">{{ account.email }}</p>
+
+                  <!-- Member Badge -->
+                  <div v-if="account.is_member">
                     <span
-                      class="px-2 py-1 text-xs font-medium rounded-full"
-                      :class="getStatusColor(project.status)"
+                      class="inline-flex items-center gap-2 px-3 py-1 bg-main text-white text-sm rounded-full font-medium"
                     >
-                      {{ project.status }}
+                      <Icon name="simple-icons:magic" class="w-4 h-4" />
+                      Membre Premium
                     </span>
-                    <div class="text-sm font-bold text-black mt-1">
-                      {{ project.amount }}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Account Details -->
+            <section class="bg-white border border-neutral-200 rounded-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <Icon
+                  name="heroicons:information-circle"
+                  class="w-6 h-6 text-accent"
+                />
+                <h2 class="text-xl font-bold text-black">Détails du compte</h2>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <div class="text-sm text-neutral-600 mb-1">Nom</div>
+                  <div class="font-medium">
+                    {{ account.name || "Non renseigné" }}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-sm text-neutral-600 mb-1">Email</div>
+                  <div class="font-medium">{{ account.email }}</div>
+                </div>
+
+                <div>
+                  <div class="text-sm text-neutral-600 mb-1">Genre</div>
+                  <div class="font-medium">
+                    {{ account.gender || "Non renseigné" }}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-sm text-neutral-600 mb-1">
+                    Spécialisation
+                  </div>
+                  <div class="font-medium">
+                    {{ account.specialization || "Non renseignée" }}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-sm text-neutral-600 mb-1">
+                    Niveau tarifaire
+                  </div>
+                  <div class="font-medium">
+                    {{ getTarifDisplay(account.tarif) }}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="text-sm text-neutral-600 mb-1">Membre depuis</div>
+                  <div class="font-medium">
+                    {{ formatDate(account.created_at) }}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Account Status -->
+            <section class="bg-white border border-neutral-200 rounded-lg p-6">
+              <div class="flex items-center gap-3 mb-4">
+                <Icon
+                  name="heroicons:shield-check"
+                  class="w-6 h-6 text-accent"
+                />
+                <h2 class="text-xl font-bold text-black">Statut du compte</h2>
+              </div>
+
+              <div class="space-y-4">
+                <div
+                  class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
+                >
+                  <div>
+                    <div class="font-medium">Statut du compte</div>
+                    <div class="text-sm text-neutral-600">
+                      État général du compte
+                    </div>
+                  </div>
+                  <span
+                    :class="[
+                      'px-3 py-1 text-sm rounded-full font-medium',
+                      account.is_ban
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-green-100 text-green-800',
+                    ]"
+                  >
+                    {{ getAccountStatus(account.is_ban) }}
+                  </span>
+                </div>
+
+                <div
+                  class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
+                >
+                  <div>
+                    <div class="font-medium">Membership</div>
+                    <div class="text-sm text-neutral-600">
+                      Niveau d'adhésion
+                    </div>
+                  </div>
+                  <span
+                    :class="[
+                      'px-3 py-1 text-sm rounded-full font-medium',
+                      account.is_member
+                        ? 'bg-accent text-white'
+                        : 'bg-neutral-200 text-neutral-700',
+                    ]"
+                  >
+                    {{ getMembershipStatus(account.is_member) }}
+                  </span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="space-y-6">
+            <!-- Profile Actions -->
+            <div
+              class="bg-white border border-neutral-200 rounded-lg p-6 text-center"
+            >
+              <div class="mb-4">
+                <div class="text-lg font-bold text-black mb-2">
+                  {{ isOwnAccount ? "Mon compte" : "Profil" }}
+                </div>
+                <div class="text-sm text-neutral-600">{{ account.email }}</div>
+              </div>
+
+              <div v-if="isOwnAccount" class="space-y-3">
+                <button @click="editProfile" class="w-full accent-button py-3">
+                  <Icon name="heroicons:pencil" class="w-4 h-4 inline mr-2" />
+                  Modifier le profil
+                </button>
+                <button class="w-full outline-button py-3">
+                  <Icon
+                    name="heroicons:cog-6-tooth"
+                    class="w-4 h-4 inline mr-2"
+                  />
+                  Paramètres
+                </button>
+                <button
+                  @click="handleLogout"
+                  class="w-full outline-button py-3 text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300"
+                >
+                  <Icon
+                    name="heroicons:arrow-right-on-rectangle"
+                    class="w-4 h-4 inline mr-2"
+                  />
+                  Déconnexion
+                </button>
+              </div>
+            </div>
+
+            <!-- Quick Info -->
+            <div class="bg-white border border-neutral-200 rounded-lg p-6">
+              <h3 class="flex items-center gap-2 font-bold text-black mb-4">
+                <Icon
+                  name="heroicons:identification"
+                  class="w-5 h-5 text-accent"
+                />
+                Informations rapides
+              </h3>
+
+              <div class="space-y-4">
+                <div class="flex items-start gap-3">
+                  <Icon
+                    name="heroicons:calendar"
+                    class="w-5 h-5 text-neutral-400 mt-0.5"
+                  />
+                  <div>
+                    <div class="text-sm text-neutral-600">Compte créé</div>
+                    <div class="font-medium">
+                      {{ formatDate(account.created_at) }}
                     </div>
                   </div>
                 </div>
-                <div class="text-sm text-neutral-500">
-                  {{ formatDate(project.date) }}
-                </div>
-              </div>
-            </div>
-          </section>
 
-          <!-- Recent Activity -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <Icon name="heroicons:clock" class="w-6 h-6 text-accent" />
-              <h2 class="text-xl font-bold text-black">Activité récente</h2>
-            </div>
-            <div class="space-y-4">
-              <div
-                v-for="activity in account.activities"
-                :key="activity.id"
-                class="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg"
-              >
-                <div class="w-2 h-2 bg-main rounded-full mt-2"></div>
-                <div class="flex-1">
-                  <p class="text-sm font-medium text-black">
-                    {{ activity.description }}
-                  </p>
-                  <p class="text-xs text-neutral-500">
-                    {{ formatDate(activity.date) }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="space-y-6">
-          <!-- Profile Actions -->
-          <div
-            class="bg-white border border-neutral-200 rounded-lg p-6 text-center"
-          >
-            <div class="mb-4">
-              <div class="text-lg font-bold text-black mb-2">Mon compte</div>
-              <div class="text-sm text-neutral-600">{{ account.email }}</div>
-            </div>
-
-            <div class="space-y-3">
-              <button @click="editProfile" class="w-full accent-button py-3">
-                <Icon name="heroicons:pencil" class="w-4 h-4 inline mr-2" />
-                Modifier le profil
-              </button>
-              <button class="w-full outline-button py-3">
-                <Icon
-                  name="heroicons:cog-6-tooth"
-                  class="w-4 h-4 inline mr-2"
-                />
-                Paramètres
-              </button>
-            </div>
-          </div>
-
-          <!-- Account Info -->
-          <div class="bg-white border border-neutral-200 rounded-lg p-6">
-            <h3 class="flex items-center gap-2 font-bold text-black mb-4">
-              <Icon
-                name="heroicons:information-circle"
-                class="w-5 h-5 text-accent"
-              />
-              Informations du compte
-            </h3>
-
-            <div class="space-y-4">
-              <div class="flex items-start gap-3">
-                <Icon
-                  name="heroicons:envelope"
-                  class="w-5 h-5 text-neutral-400 mt-0.5"
-                />
-                <div>
-                  <div class="text-sm text-neutral-600">Email</div>
-                  <div class="font-medium">{{ account.email }}</div>
-                </div>
-              </div>
-
-              <div class="flex items-start gap-3">
-                <Icon
-                  name="heroicons:calendar"
-                  class="w-5 h-5 text-neutral-400 mt-0.5"
-                />
-                <div>
-                  <div class="text-sm text-neutral-600">Membre depuis</div>
-                  <div class="font-medium">
-                    {{ formatDate(account.joinDate) }}
+                <div class="flex items-start gap-3">
+                  <Icon
+                    name="heroicons:star"
+                    class="w-5 h-5 text-neutral-400 mt-0.5"
+                  />
+                  <div>
+                    <div class="text-sm text-neutral-600">Niveau</div>
+                    <div class="font-medium">
+                      {{ getTarifDisplay(account.tarif) }}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="flex items-start gap-3">
-                <Icon
-                  name="heroicons:shield-check"
-                  class="w-5 h-5 text-neutral-400 mt-0.5"
-                />
-                <div>
-                  <div class="text-sm text-neutral-600">Statut</div>
-                  <div class="font-medium text-accent">
-                    {{ account.membershipStatus }}
+                <div
+                  v-if="account.specialization"
+                  class="flex items-start gap-3"
+                >
+                  <Icon
+                    name="heroicons:academic-cap"
+                    class="w-5 h-5 text-neutral-400 mt-0.5"
+                  />
+                  <div>
+                    <div class="text-sm text-neutral-600">Spécialisation</div>
+                    <div class="font-medium">{{ account.specialization }}</div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Membership Status -->
-          <div
-            class="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-lg p-6"
-          >
-            <h3 class="flex items-center gap-2 font-bold text-black mb-4">
-              <Icon name="heroicons:star" class="w-5 h-5 text-accent" />
-              Membership Premium
-            </h3>
-            <div class="space-y-3">
-              <div class="flex items-center gap-2 text-sm">
-                <Icon name="heroicons:check" class="w-4 h-4 text-green-600" />
-                <span>Accès illimité aux experts</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm">
-                <Icon name="heroicons:check" class="w-4 h-4 text-green-600" />
-                <span>Propositions sans limite</span>
-              </div>
-              <div class="flex items-center gap-2 text-sm">
-                <Icon name="heroicons:check" class="w-4 h-4 text-green-600" />
-                <span>Support prioritaire</span>
+            <!-- Membership Card -->
+            <div
+              v-if="account.is_member"
+              class="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-lg p-6"
+            >
+              <h3 class="flex items-center gap-2 font-bold text-black mb-4">
+                <Icon name="heroicons:star" class="w-5 h-5 text-accent" />
+                Membre Premium
+              </h3>
+              <div class="space-y-3">
+                <div class="flex items-center gap-2 text-sm">
+                  <Icon name="heroicons:check" class="w-4 h-4 text-green-600" />
+                  <span>Accès illimité aux experts</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                  <Icon name="heroicons:check" class="w-4 h-4 text-green-600" />
+                  <span>Propositions sans limite</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm">
+                  <Icon name="heroicons:check" class="w-4 h-4 text-green-600" />
+                  <span>Support prioritaire</span>
+                </div>
               </div>
             </div>
           </div>
