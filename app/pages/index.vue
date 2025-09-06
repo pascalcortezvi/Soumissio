@@ -1,4 +1,5 @@
 <template>
-  <Banner />
-  <InfoBar />
+  <VideoBanner />
+  <RecentExperts />
+  <RecentContracts />
 </template>

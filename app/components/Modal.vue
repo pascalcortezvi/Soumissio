@@ -43,10 +43,10 @@ onBeforeUnmount(() => {
 
 <template>
   <transition
-    enter-active-class="transition ease-out duration-300"
+    enter-active-class="transition ease-out"
     enter-from-class="opacity-0"
     enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-200"
+    leave-active-class="transition ease-in"
     leave-from-class="opacity-100"
     leave-to-class="opacity-0"
   >
@@ -56,10 +56,10 @@ onBeforeUnmount(() => {
       @click.self="$emit('close')"
     >
       <transition
-        enter-active-class="transition ease-out duration-300 transform"
+        enter-active-class="transition ease-out transform"
         enter-from-class="opacity-0 scale-95"
         enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition ease-in duration-200 transform"
+        leave-active-class="transition ease-in transform"
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-95"
         appear
@@ -72,7 +72,7 @@ onBeforeUnmount(() => {
           <component v-if="component" :is="component" v-bind="componentProps" />
           <!-- Fallback slot content -->
           <slot v-else>
-            <h1 class="text-xl font-semibold mb-4">Modal</h1>
+            <h1 class="text-xl font-bold mb-4">Modal</h1>
             <p class="text-gray-600">This is a modal content.</p>
           </slot>
         </div>

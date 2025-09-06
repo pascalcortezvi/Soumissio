@@ -2,9 +2,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  devtools: { enabled: true },
-  modules: ["@nuxt/image", "@nuxt/icon"],
-  css: ["~/app.css"],
+  devtools: { enabled: false },
+  modules: ["@nuxt/image", "@nuxt/icon", "@nuxtjs/supabase"],
   app: {
     head: {
       link: [
@@ -21,6 +20,21 @@ export default defineNuxtConfig({
       ],
     },
   },
+  runtimeConfig: {
+    SUPABASE_URL: process.env.SUPABASE_URL,
+    SUPABASE_KEY: process.env.SUPABASE_KEY,
+  },
+  supabase: {
+    useSsrCookies: true,
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
+    redirectOptions: {
+      login: "/",
+      callback: "/",
+      exclude: ["/*"],
+    },
+  },
+  css: ["~/app.css"],
   vite: {
     plugins: [tailwindcss()],
   },

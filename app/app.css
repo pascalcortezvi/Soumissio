@@ -1,33 +1,38 @@
 @import "tailwindcss";
 
+@theme {
+  --color-dark: #242424;
+}
+
 body {
+  @apply antialiased;
   font-family: "Poppins", sans-serif;
 }
 
-button {
-  @apply cursor-pointer transition-all duration-300 active:scale-95 select-none;
+.bg-main {
+  @apply bg-gradient-to-br from-[#0652db] to-[#242424];
 }
 
-.nav-link {
-  @apply text-black font-medium flex flex-col items-center gap-1 mt-2 select-none;
-}
-
-.nav-link .nav-underline {
-  @apply w-8 h-[2px] bg-black opacity-0 transition-opacity rounded-full;
-}
-
-.nav-link:hover .nav-underline {
-  @apply opacity-100;
-}
-
-.black-button {
-  @apply bg-black hover:bg-neutral-800 text-sm text-white rounded-md px-5 py-2 font-medium select-none transition-all;
-}
-
-.outline-button {
-  @apply bg-white border border-neutral-400 text-sm text-black rounded-md px-5 py-2 font-medium select-none transition-all hover:border-black;
+.bg-light {
+  @apply bg-gradient-to-br from-white to-[#CEDFFF];
 }
 
 .x-container {
-  @apply max-w-[1400px] mx-auto px-4;
+  @apply max-w-[1500px] mx-auto px-2 lg:px-4;
+}
+
+button {
+  @apply cursor-pointer select-none;
+}
+
+.nav-link {
+  @apply text-white/60 font-medium flex items-center gap-1.5 select-none transition-all hover:text-white;
+}
+
+.accent-button {
+  @apply bg-gradient-to-br from-[#0652db] to-[#242424] hover:from-[#0652db]/90 hover:to-[#242424]/90 text-sm text-white rounded-md px-5 py-2 font-medium select-none transition-all;
+}
+
+.white-button {
+  @apply bg-white hover:bg-white/90 text-sm text-black rounded-md px-5 py-2 font-medium select-none transition-all;
 }
