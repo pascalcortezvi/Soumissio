@@ -67,7 +67,7 @@ const submitProposal = () => {
       :description="`${contract.company} • ${contract.location} • ${contract.duration} • ${contract.budget}`"
     />
 
-    <div class="x-container py-8">
+    <div class="x-container y-container">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-8">

@@ -188,7 +188,7 @@ const daysRemaining = (deadline) => {
       description="Explorez les opportunités de contrats IT au Québec. Filtrez par type d'emploi, budget et échéance pour trouver le projet parfait pour vos compétences."
     />
 
-    <div class="x-container py-8">
+    <div class="x-container y-container">
       <!-- Search and Filters -->
       <div class="mb-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -262,7 +262,7 @@ const daysRemaining = (deadline) => {
           v-for="contract in filteredContracts"
           :key="contract.id"
           :to="`/contract/${contract.id}`"
-          class="block bg-white border border-neutral-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+          class="block bg-blue-50 rounded-lg p-5 cursor-pointer"
         >
           <!-- Header -->
           <div class="flex justify-between items-start mb-4">
@@ -301,7 +301,7 @@ const daysRemaining = (deadline) => {
               <span
                 v-for="requirement in contract.requirements"
                 :key="requirement"
-                class="px-2 py-1 bg-neutral-100 text-neutral-700 text-xs rounded-md"
+                class="px-2 py-1 bg-white text-xs rounded-md"
               >
                 {{ requirement }}
               </span>

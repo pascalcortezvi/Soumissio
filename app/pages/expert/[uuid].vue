@@ -126,48 +126,12 @@ const contactExpert = () => {
       :description="`${expert.jobTitle} • ${expert.city}, ${expert.province} • ${expert.hourlyRate} • ${expert.rating}/5 étoiles`"
     />
 
-    <div class="x-container py-8">
-      <!-- Quick Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ expert.rating }}
-          </div>
-          <div class="text-sm text-neutral-600">Note moyenne</div>
-        </div>
-        <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ expert.reviewsCount }}
-          </div>
-          <div class="text-sm text-neutral-600">Évaluations</div>
-        </div>
-        <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ expert.projectsCompleted }}
-          </div>
-          <div class="text-sm text-neutral-600">Projets complétés</div>
-        </div>
-        <div
-          class="bg-white border border-neutral-200 rounded-lg p-4 text-center"
-        >
-          <div class="text-2xl font-bold text-black">
-            {{ expert.responseTime }}
-          </div>
-          <div class="text-sm text-neutral-600">Temps de réponse</div>
-        </div>
-      </div>
-
+    <div class="x-container y-container">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-6">
           <!-- About Section -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
+          <section class="bg-blue-50 rounded-lg p-6">
             <div class="flex items-center gap-3 mb-4">
               <Icon name="heroicons:user" class="w-6 h-6 text-accent" />
               <h2 class="text-xl font-bold text-black">À propos</h2>
@@ -178,120 +142,21 @@ const contactExpert = () => {
           </section>
 
           <!-- Skills & Expertise -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
+          <section class="bg-blue-50 rounded-lg p-6">
             <div class="flex items-center gap-3 mb-4">
               <Icon name="heroicons:code-bracket" class="w-6 h-6 text-accent" />
               <h2 class="text-xl font-bold text-black">
                 Compétences & Expertise
               </h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="grid grid-cols-3 gap-4">
               <div
                 v-for="skill in expert.skills"
                 :key="skill.name"
-                class="flex items-center justify-between p-3 bg-neutral-50 rounded-lg border"
+                class="flex items-center justify-between p-3 bg-white rounded-md"
               >
                 <div>
                   <div class="font-bold text-black">{{ skill.name }}</div>
-                  <div class="text-xs text-neutral-600">
-                    {{ skill.years }} an{{ skill.years > 1 ? "s" : "" }}
-                  </div>
-                </div>
-                <span
-                  class="px-2 py-1 text-xs font-medium rounded-full"
-                  :class="getSkillLevelColor(skill.level)"
-                >
-                  {{ skill.level }}
-                </span>
-              </div>
-            </div>
-          </section>
-
-          <!-- Portfolio Projects -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <Icon name="heroicons:briefcase" class="w-6 h-6 text-accent" />
-              <h2 class="text-xl font-bold text-black">Portfolio</h2>
-            </div>
-            <div class="space-y-4">
-              <div
-                v-for="project in expert.portfolio"
-                :key="project.id"
-                class="border border-neutral-200 rounded-lg p-4 bg-neutral-50"
-              >
-                <div class="flex justify-between items-start mb-3">
-                  <h3 class="text-lg font-bold text-black">
-                    {{ project.title }}
-                  </h3>
-                  <div class="text-right text-sm text-neutral-600">
-                    <div>{{ project.year }}</div>
-                    <div>{{ project.duration }}</div>
-                  </div>
-                </div>
-                <p class="text-neutral-700 mb-3 leading-relaxed">
-                  {{ project.description }}
-                </p>
-                <div class="flex flex-wrap gap-2">
-                  <span
-                    v-for="tech in project.technologies"
-                    :key="tech"
-                    class="px-3 py-1 bg-main text-white text-xs rounded-full font-medium"
-                  >
-                    {{ tech }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Client Reviews -->
-          <section class="bg-white border border-neutral-200 rounded-lg p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <Icon
-                name="heroicons:chat-bubble-left-ellipsis"
-                class="w-6 h-6 text-accent"
-              />
-              <h2 class="text-xl font-bold text-black">Évaluations clients</h2>
-            </div>
-            <div class="space-y-4">
-              <div
-                v-for="review in expert.reviews"
-                :key="review.id"
-                class="border border-neutral-200 rounded-lg p-4 bg-neutral-50"
-              >
-                <div class="flex justify-between items-start mb-3">
-                  <div>
-                    <h4 class="font-bold text-black">
-                      {{ review.client }}
-                    </h4>
-                    <div class="flex items-center gap-2 mt-1">
-                      <div class="flex items-center">
-                        <Icon
-                          v-for="i in 5"
-                          :key="i"
-                          name="heroicons:star"
-                          :class="
-                            i <= review.rating
-                              ? 'text-yellow-500'
-                              : 'text-neutral-300'
-                          "
-                          class="w-4 h-4"
-                        />
-                      </div>
-                      <span class="text-sm text-neutral-600"
-                        >{{ review.rating }}/5</span
-                      >
-                    </div>
-                  </div>
-                  <span class="text-sm text-neutral-500">{{
-                    formatDate(review.date)
-                  }}</span>
-                </div>
-                <p class="text-neutral-700 mb-2 leading-relaxed">
-                  {{ review.comment }}
-                </p>
-                <div class="text-sm text-accent font-medium">
-                  {{ review.project }}
                 </div>
               </div>
             </div>
@@ -301,35 +166,12 @@ const contactExpert = () => {
         <!-- Sidebar -->
         <div class="space-y-6">
           <!-- Hire Expert -->
-          <div
-            class="bg-white border border-neutral-200 rounded-lg p-6 text-center"
-          >
-            <div class="mb-4">
-              <div class="text-3xl font-bold text-accent mb-2">
-                {{ expert.hourlyRate }}
-              </div>
-              <div class="text-sm text-neutral-600">
-                {{ expert.availability }}
-              </div>
-            </div>
-
-            <div class="space-y-3">
-              <button
-                @click="contactExpert"
-                class="w-full black-button py-4 text-lg"
-              >
-                <Icon name="heroicons:envelope" class="w-5 h-5 inline mr-2" />
-                Contacter
-              </button>
-              <button class="w-full outline-button py-3">
-                <Icon name="heroicons:plus" class="w-4 h-4 inline mr-2" />
-                Inviter pour un projet
-              </button>
-            </div>
+          <div class="bg-blue-50 rounded-lg p-6 text-center">
+            <div class="text-3xl font-bold text-accent mb-2">$$</div>
           </div>
 
           <!-- Professional Info -->
-          <div class="bg-white border border-neutral-200 rounded-lg p-6">
+          <div class="bg-blue-50 rounded-lg p-6">
             <h3 class="flex items-center gap-2 font-bold text-black mb-4">
               <Icon
                 name="heroicons:information-circle"
@@ -398,7 +240,7 @@ const contactExpert = () => {
           </div>
 
           <!-- Certifications -->
-          <div class="bg-white border border-neutral-200 rounded-lg p-6">
+          <div class="bg-blue-50 rounded-lg p-6">
             <h3 class="flex items-center gap-2 font-bold text-black mb-4">
               <Icon name="heroicons:shield-check" class="w-5 h-5 text-accent" />
               Certifications
@@ -416,17 +258,6 @@ const contactExpert = () => {
                 <span class="text-sm font-medium">{{ cert }}</span>
               </div>
             </div>
-          </div>
-
-          <!-- Navigation -->
-          <div class="bg-white border border-neutral-200 rounded-lg p-4">
-            <NuxtLink
-              to="/experts"
-              class="flex items-center justify-center gap-2 w-full outline-button py-3"
-            >
-              <Icon name="heroicons:arrow-left" class="w-4 h-4" />
-              Retour aux experts
-            </NuxtLink>
           </div>
         </div>
       </div>

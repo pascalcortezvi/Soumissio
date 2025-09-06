@@ -91,20 +91,20 @@ const getDaysAgo = (dateString) => {
           v-for="contract in recentContracts"
           :key="contract.id"
           :to="`/contract/${contract.id}`"
-          class="block bg-white border border-neutral-200 rounded-lg p-6 hover:shadow-lg transition-all cursor-pointer group"
+          class="block bg-blue-50 rounded-lg p-5 group"
         >
           <!-- Header -->
           <div class="flex justify-between items-start mb-4">
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-2">
                 <h3
-                  class="font-bold text-lg text-black group-hover:text-accent transition-colors line-clamp-2"
+                  class="font-bold text-lg text-black line-clamp-2 group-hover:underline"
                 >
                   {{ contract.title }}
                 </h3>
                 <span
                   v-if="contract.isUrgent"
-                  class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-md flex-shrink-0"
+                  class="px-2 py-1 bg-main text-white text-xs font-medium rounded-md flex-shrink-0"
                 >
                   Urgent
                 </span>
@@ -147,7 +147,7 @@ const getDaysAgo = (dateString) => {
       </div>
 
       <!-- View All Button -->
-      <div class="text-center">
+      <div class="text-center mt-14">
         <NuxtLink to="/contracts" class="accent-button py-3 px-8">
           Voir tous les contrats
         </NuxtLink>

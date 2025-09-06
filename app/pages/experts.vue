@@ -130,7 +130,7 @@ const filteredExperts = computed(() => {
       description="Découvrez des professionnels IT qualifiés au Québec. Parcourez les profils, consultez leurs compétences et contactez directement les."
     />
 
-    <div class="x-container py-8">
+    <div class="x-container y-container">
       <!-- Search and Filters -->
       <div class="mb-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -201,7 +201,7 @@ const filteredExperts = computed(() => {
           v-for="expert in filteredExperts"
           :key="expert.id"
           :to="`/expert/${expert.id}`"
-          class="block bg-white border border-neutral-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+          class="block bg-blue-50 rounded-lg p-5 cursor-pointer"
         >
           <!-- Avatar and Header -->
           <div class="flex items-center mb-4">
@@ -243,7 +243,7 @@ const filteredExperts = computed(() => {
               <span
                 v-for="skill in expert.skills.slice(0, 3)"
                 :key="skill"
-                class="px-2 py-1 bg-neutral-100 text-neutral-700 text-xs rounded-md"
+                class="px-2 py-1 bg-white text-xs rounded-md"
               >
                 {{ skill }}
               </span>

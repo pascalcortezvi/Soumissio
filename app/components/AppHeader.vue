@@ -50,14 +50,13 @@ const isActiveRoute = (path) => {
 </script>
 
 <template>
-  <header class="bg-main text-white flex items-center justify-center py-8">
+  <header class="bg-main text-white flex items-center justify-center py-7">
     <div class="x-container flex items-center justify-between w-full">
       <div class="flex items-center gap-x-2">
         <NuxtLink
           class="mr-10 flex items-center gap-2 text-3xl font-bold select-none"
           to="/"
         >
-          <Icon name="game-icons:fleur-de-lys" class="text-2xl" />
           <p>SOUMISSIO</p>
         </NuxtLink>
         <div class="flex items-center gap-8">

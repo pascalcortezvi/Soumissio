@@ -276,7 +276,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="x-container py-8">
+      <div class="x-container y-container">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Main Content Skeleton -->
           <div class="lg:col-span-2 space-y-6">
@@ -452,7 +452,7 @@ onMounted(() => {
         :description="`C'est ici que vous pouvez modifier vos informations personnelles et votre profil.`"
       />
 
-      <div class="x-container pt-5 pb-20">
+      <div class="x-container y-container">
         <div class="max-w-4xl mx-auto">
           <!-- Main Content -->
           <div class="space-y-6">
@@ -619,15 +619,8 @@ onMounted(() => {
             </section>
 
             <!-- Delete Account Section -->
-            <section v-if="isOwnAccount" class="bg-red-50 rounded-md p-6">
-              <div class="text-center">
-                <h3 class="text-lg font-bold text-black mb-2">
-                  Zone de danger
-                </h3>
-                <p class="text-sm text-neutral-600 mb-4">
-                  Une fois votre compte supprimé, toutes vos données seront
-                  définitivement perdues.
-                </p>
+            <section v-if="isOwnAccount">
+              <div class="flex items-center justify-center mt-10">
                 <DeleteAccountButton
                   :account-uuid="account.uuid"
                   @account-deleted="handleAccountDeleted"

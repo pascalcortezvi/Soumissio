@@ -13,12 +13,12 @@ body {
   @apply bg-gradient-to-br from-[#0652db] to-[#242424];
 }
 
-.bg-light {
-  @apply bg-gradient-to-br from-white to-[#CEDFFF];
-}
-
 .x-container {
   @apply max-w-[1500px] mx-auto px-2 lg:px-4;
+}
+
+.y-container {
+  @apply pt-5 pb-8 lg:pt-5 lg:pb-16;
 }
 
 button {
@@ -30,13 +30,13 @@ button {
 }
 
 .accent-button {
-  @apply bg-gradient-to-br from-[#0652db] to-[#242424] hover:from-[#0652db]/90 hover:to-[#242424]/90 text-sm text-white rounded-md px-4 py-2 font-medium select-none transition-all;
+  @apply bg-gradient-to-br from-[#0652db] to-[#242424] hover:from-[#0652db]/90 hover:to-[#242424]/90 text-sm text-white rounded-md px-4 py-3 font-medium select-none transition-all;
 }
 
 .white-button {
-  @apply bg-white hover:bg-white/90 text-sm text-black rounded-md px-4 py-2 font-medium select-none transition-all;
+  @apply bg-white hover:bg-white/90 text-sm text-black rounded-md px-4 py-3 font-medium select-none transition-all;
 }
 
 .dark-button {
-  @apply bg-neutral-800 hover:bg-neutral-800/90 text-sm text-white rounded-md px-4 py-2 font-medium select-none transition-all;
+  @apply bg-neutral-800 hover:bg-neutral-800/90 text-sm text-white rounded-md px-4 py-3 font-medium select-none transition-all;
 }

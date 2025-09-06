@@ -10,8 +10,9 @@
             <h3 class="text-2xl font-bold">SOUMISSIO</h3>
           </div>
           <p class="text-white/80 mb-6 leading-relaxed">
-            La plateforme québécoise qui connecte les entreprises aux meilleurs
-            experts IT. Trouvez le talent parfait pour vos projets.
+            Soumissio est la référence québécoise pour trouver des experts en
+            technologies de l’information. Nous connectons les entreprises aux
+            meilleurs talents IT pour assurer le succès de vos projets.
           </p>
         </div>
 

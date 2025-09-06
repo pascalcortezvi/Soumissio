@@ -45,7 +45,7 @@ const recentExperts = ref([
 </script>
 
 <template>
-  <section class="py-16 bg-light">
+  <section class="py-16 bg-blue-50">
     <div class="x-container">
       <div class="text-center mb-12">
         <h2 class="text-3xl font-bold text-black mb-4">
@@ -62,7 +62,7 @@ const recentExperts = ref([
           v-for="expert in recentExperts"
           :key="expert.id"
           :to="`/expert/${expert.id}`"
-          class="block bg-white rounded-lg p-6 hover:shadow-lg transition-all cursor-pointer group"
+          class="block bg-white rounded-lg p-6 group"
         >
           <!-- Avatar and Header -->
           <div class="flex items-center mb-4">
@@ -72,9 +72,7 @@ const recentExperts = ref([
               {{ expert.avatar }}
             </div>
             <div class="ml-3">
-              <h3
-                class="font-bold text-black group-hover:text-accent transition-colors"
-              >
+              <h3 class="font-bold text-black group-hover:underline">
                 {{ expert.name }}
               </h3>
               <p class="text-sm text-neutral-600">{{ expert.jobType }}</p>
@@ -115,7 +113,7 @@ const recentExperts = ref([
       </div>
 
       <!-- View All Button -->
-      <div class="text-center">
+      <div class="text-center mt-14">
         <NuxtLink to="/experts" class="accent-button py-3 px-8">
           Voir tous les experts
         </NuxtLink>
