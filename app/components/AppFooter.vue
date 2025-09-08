@@ -125,6 +125,7 @@
 
           <!-- Made in Quebec -->
           <div class="flex items-center gap-2 text-white/80 text-sm">
+            <Icon name="game-icons:fleur-de-lys" class="w-4 h-4 text-white" />
             <span>Fièrement québécois</span>
           </div>
         </div>
