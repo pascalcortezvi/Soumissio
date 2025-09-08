@@ -6,7 +6,6 @@
         <!-- Company Info -->
         <div class="lg:col-span-1">
           <div class="flex items-center gap-2 mb-6">
-            <Icon name="game-icons:fleur-de-lys" class="text-2xl text-white" />
             <h3 class="text-2xl font-bold">SOUMISSIO</h3>
           </div>
           <p class="text-white/80 mb-6 leading-relaxed">
@@ -126,7 +125,6 @@
 
           <!-- Made in Quebec -->
           <div class="flex items-center gap-2 text-white/80 text-sm">
-            <Icon name="game-icons:fleur-de-lys" class="w-4 h-4 text-white" />
             <span>Fièrement québécois</span>
           </div>
         </div>
